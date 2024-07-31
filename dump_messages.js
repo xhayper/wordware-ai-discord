@@ -17,6 +17,3 @@ const fs = require('node:fs/promises')
 
   await fs.writeFile('dump_messages.json', JSON.stringify(messageList))
 })()
-
-// text
-// createdAt
