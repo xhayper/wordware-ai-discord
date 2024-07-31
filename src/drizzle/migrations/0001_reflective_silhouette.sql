@@ -1,1 +1,1 @@
-ALTER TABLE "users" ADD COLUMN "tweets" jsonb;
+ALTER TABLE "users" ADD COLUMN "messages" jsonb;

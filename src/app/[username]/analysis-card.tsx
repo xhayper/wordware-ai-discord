@@ -111,7 +111,7 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ title, icon: Icon, content,
                 <a
                   target="_blank"
                   className={cn(`flex-center gap-2 text-lg text-white`)}
-                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`this is my Twitter Personality analysis by AI Agent, built on @wordware_ai\n\n`)}&url=${encodeURIComponent(`https://twitter.wordware.ai/${username}?section=${contentKey}`)}`}>
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`this is my Discord Personality analysis by AI Agent, built on @wordware_ai\n\n`)}&url=${encodeURIComponent(`https://discord.wordware.ai/${username}?section=${contentKey}`)}`}>
                   <PiXLogo /> Share
                 </a>
               </Button>
@@ -121,7 +121,7 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ title, icon: Icon, content,
           <CardContent className="flex flex-col text-gray-700">{renderContent()}</CardContent>
         </div>
         <CardFooter className={`flex items-center justify-end space-x-2`}>
-          <a href="https://wordware.ai?utm_source=twitterai">
+          <a href="https://wordware.ai?utm_source=discordai">
             <WordwareLogo
               emblemOnly
               color={'black'}
@@ -132,7 +132,7 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ title, icon: Icon, content,
           <span className="items-center text-xs">
             Powered by{' '}
             <a
-              href="https://wordware.ai?utm_source=twitterai"
+              href="https://wordware.ai?utm_source=discordai"
               className="font-semibold underline-offset-4 hover:underline">
               Wordware
             </a>

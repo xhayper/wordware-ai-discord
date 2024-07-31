@@ -31,7 +31,7 @@ const Footer = () => {
             href="https://x.com/wordware_ai"
             target="_blank"
             className="flex-center gap-2 text-white">
-            <PiXLogo size={18} />X (fka. Twitter)
+            <PiXLogo size={18} />X (fka. Discord)
           </a>
 
           <a

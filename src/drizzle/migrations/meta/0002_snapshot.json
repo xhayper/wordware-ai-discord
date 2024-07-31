@@ -39,18 +39,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "location": {
-          "name": "location",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "error": {
           "name": "error",
           "type": "text",
@@ -63,8 +51,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "tweets": {
-          "name": "tweets",
+        "messages": {
+          "name": "messages",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false
@@ -82,15 +70,15 @@
           "notNull": false,
           "default": false
         },
-        "tweet_scrape_started": {
-          "name": "tweet_scrape_started",
+        "message_scrape_started": {
+          "name": "message_scrape_started",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
           "default": false
         },
-        "tweet_scrape_completed": {
-          "name": "tweet_scrape_completed",
+        "message_scrape_completed": {
+          "name": "message_scrape_completed",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
@@ -118,9 +106,7 @@
         "users_username_unique": {
           "name": "users_username_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "username"
-          ]
+          "columns": ["username"]
         }
       }
     }

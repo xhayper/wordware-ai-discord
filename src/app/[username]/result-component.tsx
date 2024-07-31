@@ -10,27 +10,27 @@ import { SelectUser } from '@/drizzle/schema'
 import { parsePartialJson } from '@/lib/parse-partial-json'
 import { cn } from '@/lib/utils'
 
-import Result, { TwitterAnalysis } from './result'
+import Result, { DiscordAnalysis } from './result'
 
 /**
- * Represents the steps in the Twitter analysis process
+ * Represents the steps in the Discord analysis process
  * @typedef {Object} Steps
  * @property {boolean} profileScraped - Whether the user's profile has been scraped
- * @property {boolean} tweetScrapeStarted - Whether the tweet scraping process has started
- * @property {boolean} tweetScrapeCompleted - Whether the tweet scraping process has completed
+ * @property {boolean} messageScrapeStarted - Whether the message scraping process has started
+ * @property {boolean} ScrapeCompleted - Whether the message scraping process has completed
  * @property {boolean} wordwareStarted - Whether the Wordware analysis has started
  * @property {boolean} wordwareCompleted - Whether the Wordware analysis has completed
  */
 type Steps = {
   profileScraped: boolean
-  tweetScrapeStarted: boolean
-  tweetScrapeCompleted: boolean
+  messageScrapeStarted: boolean
+  messageScrapeCompleted: boolean
   wordwareStarted: boolean
   wordwareCompleted: boolean
 }
 
 /**
- * ResultComponent - Renders the result of Twitter analysis
+ * ResultComponent - Renders the result of Discord analysis
  * @param {Object} props - Component props
  * @param {SelectUser} props.user - User data
  */
@@ -38,41 +38,41 @@ const ResultComponent = ({ user }: { user: SelectUser }) => {
   // State to track the progress of analysis steps
   const [steps, setSteps] = useState<Steps>({
     profileScraped: user.profileScraped || false,
-    tweetScrapeStarted: user.tweetScrapeStarted || false,
-    tweetScrapeCompleted: user.tweetScrapeCompleted || false,
+    messageScrapeStarted: user.messageScrapeStarted || false,
+    messageScrapeCompleted: user.messageScrapeCompleted || false,
     wordwareStarted: user.wordwareStarted || false,
     wordwareCompleted: user.wordwareCompleted || false,
   })
 
-  // State to store the result of Twitter analysis
-  const [result, setResult] = useState<TwitterAnalysis | undefined>((user.analysis as TwitterAnalysis) || undefined)
+  // State to store the result of Discord analysis
+  const [result, setResult] = useState<DiscordAnalysis | undefined>((user.analysis as DiscordAnalysis) || undefined)
   const effectRan = useRef(false)
 
   useEffect(() => {
     if (effectRan.current) return
-    let tweetScrapeCompleted = user.tweetScrapeCompleted
+    let messageScrapeCompleted = user.messageScrapeCompleted
     effectRan.current = true
     ;(async () => {
-      let tweets = user.tweets
-      if (!user.tweetScrapeStarted) {
+      let messages = user.messages
+      if (!user.messageScrapeStarted) {
         setSteps((prev) => ({
           ...prev,
-          tweetScrapeStarted: true,
+          messageScrapeStarted: true,
         }))
-        tweets = await processScrapedUser({ username: user.username })
+        messages = await processScrapedUser({ username: user.username })
         setSteps((prev) => ({
           ...prev,
-          tweetScrapeCompleted: true,
+          messageScrapeCompleted: true,
         }))
-        tweetScrapeCompleted = true
+        messageScrapeCompleted = true
       }
-      if (tweetScrapeCompleted && !user.wordwareStarted) {
+      if (messageScrapeCompleted && !user.wordwareStarted) {
         setSteps((prev) => ({
           ...prev,
           wordwareStarted: true,
         }))
-        await handleTweetAnalysis({
-          tweets: JSON.stringify(user.tweets) || JSON.stringify(tweets),
+        await handleDiscordAnalysis({
+          messages: JSON.stringify(user.messageScrapeCompleted) || JSON.stringify(messages),
           profilePicture: user.profilePicture || '',
           profileInfo: JSON.stringify(user.fullProfile),
           username: user.username,
@@ -86,14 +86,14 @@ const ResultComponent = ({ user }: { user: SelectUser }) => {
   }, [user])
 
   /**
-   * Handles the tweet analysis process
+   * Handles the message analysis process
    * @param {Object} props - Analysis props
-   * @param {string} props.tweets - JSON string of user's tweets
+   * @param {string} props.messages - JSON string of user's messages
    * @param {string} props.profilePicture - URL of user's profile picture
    * @param {string} props.profileInfo - JSON string of user's profile info
-   * @param {string} props.username - User's Twitter username
+   * @param {string} props.username - User's Discord username
    */
-  const handleTweetAnalysis = async (props: { tweets: string; profilePicture: string; profileInfo: string; username: string }) => {
+  const handleDiscordAnalysis = async (props: { messages: string; profilePicture: string; profileInfo: string; username: string }) => {
     const response = await fetch('/api/wordware', {
       method: 'POST',
       headers: {
@@ -118,7 +118,7 @@ const ResultComponent = ({ user }: { user: SelectUser }) => {
 
         result += decoder.decode(value, { stream: true })
 
-        const parsed = parsePartialJson(result) as TwitterAnalysis
+        const parsed = parsePartialJson(result) as DiscordAnalysis
 
         setResult(parsed)
       }
@@ -151,10 +151,10 @@ const ResultComponent = ({ user }: { user: SelectUser }) => {
 
           <div>Checking who you are</div>
         </div>
-        {/* Tweet scraping step */}
+        {/* Message scraping step */}
         <div className="flex-center w-full gap-4">
-          {steps.tweetScrapeStarted ? (
-            steps.tweetScrapeCompleted ? (
+          {steps.messageScrapeStarted ? (
+            steps.messageScrapeCompleted ? (
               <PiCheckCircle
                 className="text-green-500"
                 size={24}
@@ -172,7 +172,7 @@ const ResultComponent = ({ user }: { user: SelectUser }) => {
             />
           )}
 
-          <div>Reading your Tweets</div>
+          <div>Reading your Messages</div>
         </div>
         {/* Wordware analysis step */}
         <div className="flex-center w-full gap-4">
@@ -202,7 +202,7 @@ const ResultComponent = ({ user }: { user: SelectUser }) => {
       <div className="flex flex-col gap-6">
         {/* Commented out header
         <h2 className="flex-center mt-6 gap-4 text-xl font-light">
-          Your Twitter Personality, created with
+          Your Discord Personality, created with
           <a
             href="https://wordware.ai/"
             target="_blank">
@@ -213,7 +213,7 @@ const ResultComponent = ({ user }: { user: SelectUser }) => {
           </a>
         </h2> */}
         <div className="flex-center gap-4">
-          {/* Twitter Profile Button */}
+          {/* Discord Profile Button */}
           <Button
             size={'sm'}
             asChild>
@@ -232,7 +232,7 @@ const ResultComponent = ({ user }: { user: SelectUser }) => {
               <a
                 target="_blank"
                 className="flex-center gap-2"
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`this is my Twitter Personality analysis by AI Agent, built on @wordware_ai`)}&url=${encodeURIComponent(`https://twitter.wordware.ai/${user.username}`)}`}>
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`this is my Discord Personality analysis by AI Agent, built on @wordware_ai`)}&url=${encodeURIComponent(`https://discord.wordware.ai/${user.username}`)}`}>
                 <PiXLogo /> Share
               </a>
             </Button>

@@ -9,8 +9,8 @@ export const cleanUsername = (input: string) => {
   // Remove https:// or http:// if present
   let cleaned = input.replace(/^(https?:\/\/)?(www\.)?/, '')
 
-  // Remove twitter.com/ or x.com/ if present
-  cleaned = cleaned.replace(/^(twitter\.com\/|x\.com\/)/, '')
+  // Remove discord.com/ or x.com/ if present
+  cleaned = cleaned.replace(/^(discord\.com\/\/)/, '')
 
   // Remove @ if present at the start
   cleaned = cleaned.replace(/^@/, '')

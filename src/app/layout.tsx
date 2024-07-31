@@ -21,7 +21,7 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata = {
   metadataBase: new URL(getURL()),
   title: {
-    template: `%s’s Twitter Personality Analysis by AI Agent`,
+    template: `%s’s Discord Personality Analysis by AI Agent`,
     default: siteMetadata.title,
   },
   description: siteMetadata.description,
@@ -43,7 +43,7 @@ export const metadata = {
       noimageindex: true,
     },
   },
-  twitter: {
+  discord: {
     card: 'summary_large_image',
     title: siteMetadata.title,
     description: siteMetadata.description,

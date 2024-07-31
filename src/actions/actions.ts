@@ -2,13 +2,15 @@
 
 import { unstable_cache as cache, unstable_noStore as noStore } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { ApifyClient } from 'apify-client'
 import { desc, eq, inArray, sql } from 'drizzle-orm'
 import { toast } from 'sonner'
 
 import { UserCardData } from '@/app/top-list'
 import { db } from '@/drizzle/db'
 import { InsertUser, SelectUser, users } from '@/drizzle/schema'
+
+import messages from '../../dump_messages.json'
+import user from '../../package/account/user.json'
 
 /**
  * Retrieves a user from the database by their username.
@@ -51,14 +53,13 @@ const featuredUsernames = [
 export const getTop = cache(async (): Promise<UserCardData[]> => {
   return db.query.users.findMany({
     where: eq(users.wordwareCompleted, true),
-    orderBy: desc(users.followers),
+    orderBy: desc(users.createdAt),
     limit: 12,
     columns: {
       id: true,
       username: true,
       name: true,
       profilePicture: true,
-      followers: true,
     },
   })
 }, ['top-users'])
@@ -66,13 +67,12 @@ export const getTop = cache(async (): Promise<UserCardData[]> => {
 export const getFeatured = cache(async (): Promise<UserCardData[]> => {
   return await db.query.users.findMany({
     where: inArray(users.username, featuredUsernames),
-    orderBy: desc(users.followers),
+    orderBy: desc(users.createdAt),
     columns: {
       id: true,
       username: true,
       name: true,
       profilePicture: true,
-      followers: true,
     },
   })
 }, ['featured-users'])
@@ -112,7 +112,7 @@ export const handleNewUsername = async ({ username }: { username: string }) => {
   if (user) redirect(`/${username}`)
 
   // If user does not exist, scrape the profile and then redirect to user's page.
-  const { data, error } = await scrapeProfile({ username })
+  const { data, error } = await scrapeProfile()
   console.log('🟣 | file: actions.ts:90 | handleNewUsername | error:', error, 'data', data)
 
   if (data && !error) {
@@ -132,111 +132,63 @@ export const handleNewUsername = async ({ username }: { username: string }) => {
   }
 }
 
-// Initialize the Apify client with the API key
-const apifyClient = new ApifyClient({
-  token: process.env.APIFY_API_KEY,
-})
+const avatarFromDiscordStuff = (id: string, hash: string) => `https://cdn.discordapp.com/avatars/${id}/${hash}.webp?size=512`
 
 /**
- * Scrapes a Twitter profile using the Apify API.
+ * Scrapes a Discord profile using the Apify API.
  * @param {Object} params - The parameters for the function.
- * @param {string} params.username - The Twitter username to scrape.
+ * @param {string} params.username - The Discord username to scrape.
  * @returns {Promise<{error: string | null, data: object | null}>} The scraped profile data or an error.
  */
-export const scrapeProfile = async ({ username }: { username: string }) => {
-  const input = {
-    startUrls: [`https://twitter.com/${username}`],
-    twitterHandles: [username],
-    getFollowers: true,
-    getFollowing: true,
-    maxItems: 1,
-    customMapFunction: '(object) => { return {...object} }',
-  }
-  try {
-    const run = await apifyClient.actor('apidojo/twitter-user-scraper').call(input)
-    // console.log('🟣 | file: actions.ts:72 | scrapeProfile | run:', run)
-    if (run.status === 'FAILED') throw new Error(`Scraping Error: ${run.statusMessage}`)
-
-    const { items: profiles } = await apifyClient.dataset(run.defaultDatasetId).listItems()
-    const profile = profiles[0]
-    const profilePicture = profile.profilePicture as string
-
-    if (!profile || Object.keys(profile).length === 0) throw new Error('No profile found')
-
-    return {
-      error: null,
-      data: {
-        username: profile.userName as string,
-        url: profile.url as string,
-        name: profile.name as string,
-        profilePicture: profilePicture.replace('_normal.', '_400x400.'),
-        description: profile.description as string,
-        location: profile.location as string,
-        fullProfile: profile as object,
-        followers: profile.followers as number,
+export const scrapeProfile = async () => {
+  return {
+    error: null,
+    data: {
+      username: user.username as string,
+      url: `https://discord.com/users/${user.id}`,
+      name: user.global_name as string,
+      profilePicture: avatarFromDiscordStuff(user.id, user.avatar_hash),
+      fullProfile: {
+        id: user.id,
+        name: user.global_name,
+        username: user.username,
+        has_mobile: user.has_mobile,
+        has_premium: user.premium_until !== '',
+        relationship: user.relationships.map((data) => ({
+          id: data.id,
+          nickname: data.nickname,
+          name: data.user.global_name,
+          username: data.user.username,
+        })),
       },
-    }
-  } catch (error) {
-    return {
-      data: null,
-      error: error instanceof Error ? error.message : 'No profile found',
-    }
+    },
   }
 }
 
+const takeStart = (arr: any[], n: number) => arr.slice(0, n)
+const takeLast = (arr: any[], n: number) => arr.slice(arr.length - n, arr.length)
+
 /**
- * Scrapes tweets from a Twitter profile using the Apify API.
+ * Scrapes messages from a Discord profile using the Apify API.
  * @param {Object} params - The parameters for the function.
- * @param {string} params.username - The Twitter username to scrape tweets from.
- * @returns {Promise<{data: object[] | null, error: any}>} The scraped tweets or an error.
+ * @param {string} params.username - The Discord username to scrape messages from.
+ * @returns {Promise<{data: object[] | null, error: any}>} The scraped messages or an error.
  */
-export const scrapeTweets = async ({ username }: { username: string }) => {
-  const input = {
-    startUrls: [`https://twitter.com/${username}`],
-    maxItems: 12,
-    sort: 'Latest',
-    tweetLanguage: 'en',
-    customMapFunction: `(object) => { 
-      return {
-        type: object.type,
-        text: object.text,
-        source: object.source,
-        retweetCount: object.retweetCount,
-        replyCount: object.replyCount,
-        likeCount: object.likeCount,
-        quoteCount: object.quoteCount,
-        viewCount: object.viewCount,
-        createdAt: object.createdAt,
-        lang: object.lang,
-        bookmarkCount: object.bookmarkCount,
-        isReply: object.isReply,
-        fastFollowersCount: object.fastFollowersCount,
-        favouritesCount: object.favouritesCount,
-        isRetweet: object.isRetweet,
-        isQuote: object.isQuote,
-      }
-    }`,
-  }
-
-  try {
-    const run = await apifyClient.actor('apidojo/tweet-scraper').call(input)
-    const { items: tweets } = await apifyClient.dataset(run.defaultDatasetId).listItems()
-    // console.log('🟣 | file: actions.ts:143 | scrapeTweets | tweets:', tweets)
-
-    return { data: tweets, error: null }
-  } catch (error) {
-    return {
-      data: null,
-      error: error,
-    }
+export const scrapeMessages = async () => {
+  return {
+    data: takeStart(
+      (messages as { text: string; createdAt: string }[]).map((x) => ({ text: x.text, createdAt: x.createdAt })).filter((x) => x.text.trim() != ''),
+      1_000,
+    ),
+    error: null,
   }
 }
 
 /**
- * Processes a scraped user by updating their information and scraping their tweets.
+ * Processes a scraped user by updating their information and scraping their messages.
  * @param {Object} params - The parameters for the function.
  * @param {string} params.username - The username of the user to process.
- * @returns {Promise<object[] | undefined>} The scraped tweets if successful, undefined otherwise.
+ * @returns {Promise<object[] | undefined>} The scraped messages if successful, undefined otherwise.
  */
 export const processScrapedUser = async ({ username }: { username: string }) => {
   let user = await getUser({ username })
@@ -245,33 +197,33 @@ export const processScrapedUser = async ({ username }: { username: string }) => 
     throw Error(`User not found: ${username}`)
   }
 
-  if (!user.tweetScrapeStarted) {
+  if (!user.messageScrapeStarted) {
     user = {
       ...user,
-      tweetScrapeStarted: true,
+      messageScrapeStarted: true,
     }
     await updateUser({ user })
-    // console.log('twitter scrap started')
-    let tweets
+    // console.log('discord scrap started')
+    let messages
     let error
     try {
-      const res = await scrapeTweets({ username })
-      tweets = res.data
+      const res = await scrapeMessages()
+      messages = res.data
       error = res.error
-      if (!tweets) throw new Error('No tweets found')
+      if (!messages) throw new Error('No messages found')
     } catch (e) {
       error = e
       toast.warning('Tweet scraping failed. Trying again...)')
       try {
-        const res = await scrapeTweets({ username })
-        tweets = res.data
+        const res = await scrapeMessages()
+        messages = res.data
         error = res.error
         console.error('🟣 | file: actions.ts:252 | processScrapedUserFirst | e:', e)
-        if (!tweets) throw new Error('No tweets found')
+        if (!messages) throw new Error('No messages found')
       } catch (e) {
         console.error('🟣 | file: actions.ts:255 | processScrapedUserSecond | e:', e)
         toast.warning(
-          "Tweet scraping failed a second time. Apologies - we're experiencing very high traffic at the moment. Please check that the linked profile has tweets and try again in a few minutes. Thank you for your patience.",
+          "Discord scraping failed a second time. Apologies - we're experiencing very high traffic at the moment. Please check that the linked profile has messages and try again in a few minutes. Thank you for your patience.",
         )
         return {
           ...user,
@@ -279,15 +231,15 @@ export const processScrapedUser = async ({ username }: { username: string }) => 
         }
       }
     }
-    console.log('🟣 | file: actions.ts:143 | processScrapedUser | tweets:', tweets?.length)
-    if (tweets && !error) {
+    console.log('🟣 | file: actions.ts:143 | processScrapedUser | messages:', messages?.length)
+    if (messages && !error) {
       user = {
         ...user,
-        tweets: tweets,
-        tweetScrapeCompleted: true,
+        messages: messages,
+        messageScrapeCompleted: true,
       }
       await updateUser({ user })
-      return tweets
+      return messages
     }
     if (error) {
       user = {
@@ -312,7 +264,7 @@ export const createLoopsContact = async ({ email }: { email: string }) => {
     headers: { Authorization: `Bearer ${process.env.LOOPS_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       email: email,
-      source: 'twitter-personality',
+      source: 'discord-personality',
       subscribed: true,
     }),
   }

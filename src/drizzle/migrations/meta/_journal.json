@@ -26,29 +26,15 @@
     {
       "idx": 3,
       "version": "7",
-      "when": 1721449535431,
-      "tag": "0003_milky_wallflower",
+      "when": 1722380483012,
+      "tag": "0003_low_scarlet_spider",
       "breakpoints": true
     },
     {
       "idx": 4,
       "version": "7",
-      "when": 1722380483012,
-      "tag": "0004_low_scarlet_spider",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
       "when": 1722388692434,
-      "tag": "0005_yielding_psylocke",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1722402144865,
-      "tag": "0006_spotty_shard",
+      "tag": "0004_yielding_psylocke",
       "breakpoints": true
     }
   ]

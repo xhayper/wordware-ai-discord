@@ -17,7 +17,7 @@ import { cleanUsername } from '@/lib/utils'
  * Zod schema for form validation
  */
 const formSchema = z.object({
-  username: z.string().min(3).max(50),
+  username: z.undefined().nullable().optional(),
 })
 
 /**
@@ -31,18 +31,15 @@ const NewUsernameForm = () => {
   // Initialize form with react-hook-form and zod resolver
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: searchParams.get('u') || '',
-    },
+    defaultValues: {},
   })
 
   /**
    * Handle form submission
    * @param {z.infer<typeof formSchema>} values - Form values
    */
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const cleanedUsername = cleanUsername(values.username)
-    const response = await handleNewUsername({ username: cleanedUsername })
+  async function onSubmit() {
+    const response = await handleNewUsername({ username: 'Data Package' })
     console.log('🟣 | file: new-username-form.tsx:46 | onSubmit | response:', response)
     if (response?.error) {
       toast.error(`We're experiencing high traffic at the moment. Please try again in a few minutes. Thank you for your patience.`)
@@ -65,16 +62,16 @@ const NewUsernameForm = () => {
                 {/* <FormLabel>Your X handle or link</FormLabel> */}
                 <FormControl>
                   <div className="flex items-center">
-                    <Input
+                    {/* <Input
                       disabled={form.formState.isSubmitting}
                       className="w-full rounded-l-sm rounded-r-none border-black"
                       placeholder="@username"
                       {...field}
-                    />
+                    /> */}
                     <Button
                       disabled={form.formState.isSubmitting}
                       type="submit"
-                      className="rounded-l-none rounded-r-sm">
+                      className="rounded-r-sm">
                       Discover
                     </Button>
                   </div>
@@ -89,7 +86,7 @@ const NewUsernameForm = () => {
       {form.formState.isSubmitting && (
         <div className="flex items-center gap-2 text-sm">
           <PiSpinner className="animate-spin" />
-          Looking for your X profile...
+          Looking for your Discord profile...
         </div>
       )}
     </div>

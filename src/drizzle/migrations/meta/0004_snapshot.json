@@ -1,6 +1,6 @@
 {
-  "id": "5f10f265-7434-4ac8-8eb3-15d72f38dcbd",
-  "prevId": "26e1ad9b-ddb3-456e-834a-e29e24d824b1",
+  "id": "68643e8a-639a-4447-9c43-63a52b271d0a",
+  "prevId": "5f10f265-7434-4ac8-8eb3-15d72f38dcbd",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -10,9 +10,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "text",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "concat('usr_', uuid_generate_v4())"
         },
         "username": {
           "name": "username",
@@ -39,18 +40,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "location": {
-          "name": "location",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "error": {
           "name": "error",
           "type": "text",
@@ -63,8 +52,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "tweets": {
-          "name": "tweets",
+        "messages": {
+          "name": "messages",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false
@@ -75,12 +64,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "followers": {
-          "name": "followers",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
         "profile_scraped": {
           "name": "profile_scraped",
           "type": "boolean",
@@ -88,15 +71,15 @@
           "notNull": false,
           "default": false
         },
-        "tweet_scrape_started": {
-          "name": "tweet_scrape_started",
+        "message_scrape_started": {
+          "name": "message_scrape_started",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
           "default": false
         },
-        "tweet_scrape_completed": {
-          "name": "tweet_scrape_completed",
+        "message_scrape_completed": {
+          "name": "message_scrape_completed",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
@@ -140,9 +123,7 @@
         "users_username_unique": {
           "name": "users_username_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "username"
-          ]
+          "columns": ["username"]
         }
       }
     }

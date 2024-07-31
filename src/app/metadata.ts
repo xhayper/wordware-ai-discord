@@ -1,11 +1,11 @@
 import { getURL } from '@/lib/config'
 
 const siteMetadata = {
-  title: 'Twitter Personality - AI Agent by Wordware',
+  title: 'Discord Personality - AI Agent by Wordware',
   author: 'Wordware',
-  headerTitle: 'Twitter Personality',
+  headerTitle: 'Discord Personality',
   description:
-    'Twitter Personality is an AI Agent that analyzes your tweets to reveal the unique traits that make you, you. Discover insights about your online persona.',
+    'Discord Personality is an AI Agent that analyzes your messages to reveal the unique traits that make you, you. Discover insights about your online persona.',
   language: 'en-us',
   theme: 'light',
   siteUrl: new URL(getURL()),
