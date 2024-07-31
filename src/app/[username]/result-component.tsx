@@ -220,7 +220,7 @@ const ResultComponent = ({ user }: { user: SelectUser }) => {
             <a
               target="_blank"
               className="flex-center gap-2"
-              href={`https://discord.com/users/${user.id}`}>
+              href={`https://discord.com/users/${(user.fullProfile as any).id}`}>
               <PiDiscordLogo /> Profile
             </a>
           </Button>
