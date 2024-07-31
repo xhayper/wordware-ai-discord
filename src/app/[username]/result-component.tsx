@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { PiCheckCircle, PiCircle, PiSpinner, PiXLogo } from 'react-icons/pi'
+import { PiCheckCircle, PiCircle, PiDiscordLogo, PiSpinner, PiXLogo } from 'react-icons/pi'
 
 import { processScrapedUser } from '@/actions/actions'
 import WordwareLogo from '@/components/logo'
@@ -220,8 +220,8 @@ const ResultComponent = ({ user }: { user: SelectUser }) => {
             <a
               target="_blank"
               className="flex-center gap-2"
-              href={`https://twitter.com/${user.username}`}>
-              <PiXLogo /> Profile
+              href={`https://discord.com/users/${user.id}`}>
+              <PiDiscordLogo /> Profile
             </a>
           </Button>
           {/* Share Button (only visible if result is available) */}
@@ -232,7 +232,7 @@ const ResultComponent = ({ user }: { user: SelectUser }) => {
               <a
                 target="_blank"
                 className="flex-center gap-2"
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`this is my Discord Personality analysis by AI Agent, built on @wordware_ai`)}&url=${encodeURIComponent(`https://discord.wordware.ai/${user.username}`)}`}>
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`this is my Discord Personality analysis by AI Agent, built on @wordware_ai`)}&url=${encodeURIComponent(`https://twitter.wordware.ai/${user.username}`)}`}>
                 <PiXLogo /> Share
               </a>
             </Button>
