@@ -36,7 +36,7 @@ const Page = () => {
                 className="bg-clip-text text-transparent"
                 style={{ backgroundColor: '#CB9F9F' }}>
                 {' '}
-                twitter{' '}
+                Discord{' '}
               </span>
               personality
             </h1>
@@ -48,7 +48,7 @@ const Page = () => {
             </div>
 
             <p className="mb-8 pt-8 text-base 2xl:text-lg">
-              we built an AI agent that analyzes your tweets
+              we built an AI agent that analyzes your messages
               <br />
               <span className="font-medium">to reveal the unique traits that make you, you.</span>
               <br />
@@ -98,7 +98,7 @@ const Page = () => {
                 variant={'outline'}
                 asChild>
                 <a
-                  href="https://github.com/wordware-ai/twitter"
+                  href="https://github.com/wordware-ai/discord"
                   target="_blank"
                   className="flex-center gap-2">
                   <PiGithubLogo />

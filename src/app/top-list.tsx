@@ -11,7 +11,6 @@ export interface UserCardData {
   username: string
   name: string | null
   profilePicture: string | null
-  followers: number | null
 }
 
 /**
@@ -37,7 +36,6 @@ const UserCard = ({ user }: { user: UserCardData }) => (
       <div className="w-full">
         <p className="text-start font-semibold">{user.name || user.username}</p>
         <p className="text-start text-sm text-gray-500">@{user.username}</p>
-        <p className="text-start text-sm text-gray-500">{user.followers?.toLocaleString()} followers</p>
       </div>
 
       {wordwareBoys.includes(user.username) && (

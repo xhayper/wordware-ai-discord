@@ -42,10 +42,12 @@ export async function POST(request: Request) {
     },
     body: JSON.stringify({
       inputs: {
-        tweets: user.tweets,
-        profilePicture: user.profilePicture,
-        profileInfo: user.fullProfile,
-        version: '^1.1',
+        data: JSON.stringify({
+          messages: user.messages,
+          profilePicture: user.profilePicture,
+          profileInfo: user.fullProfile,
+          version: '^3.0',
+        }),
       },
     }),
   })
@@ -67,6 +69,7 @@ export async function POST(request: Request) {
           const { done, value } = await reader.read()
 
           if (done) {
+            console.log(buffer.join(''))
             controller.close()
             return
           }

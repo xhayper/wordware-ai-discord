@@ -67,7 +67,7 @@ const Callout = () => {
           variant={'outline'}
           asChild>
           <a
-            href="https://github.com/wordware-ai/twitter"
+            href="https://github.com/wordware-ai/discord"
             target="_blank"
             className="flex-center gap-2">
             <PiGithubLogo />

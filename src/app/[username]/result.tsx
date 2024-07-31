@@ -7,8 +7,8 @@ import AnalysisCard from './analysis-card'
 import { cardData } from './config'
 
 /**
- * Represents the structure of a Twitter analysis result
- * @typedef {Object} TwitterAnalysis
+ * Represents the structure of a Discord analysis result
+ * @typedef {Object} DiscordAnalysis
  * @property {string} [about] - General description about the user
  * @property {Array<{title: string, subtitle: string}>} [strengths] - User's strengths
  * @property {Array<{title: string, subtitle: string}>} [weaknesses] - User's weaknesses
@@ -27,7 +27,7 @@ import { cardData } from './config'
  * @property {string} [roast] - Humorous roast of the user
  * @property {string} [emojis] - Emojis representing the user
  */
-export type TwitterAnalysis = {
+export type DiscordAnalysis = {
   [key: string]: string | { title: string; subtitle: string }[] | string[] | undefined
   about?: string
   roast?: string
@@ -55,12 +55,12 @@ export type TwitterAnalysis = {
 }
 
 /**
- * Result component that displays the Twitter analysis
+ * Result component that displays the Discord analysis
  * @param {Object} props - Component props
- * @param {TwitterAnalysis | undefined} props.userData - The analyzed user data
+ * @param {DiscordAnalysis | undefined} props.userData - The analyzed user data
  * @returns {JSX.Element} The rendered Result component
  */
-export default function Result({ userData }: { userData: TwitterAnalysis | undefined }) {
+export default function Result({ userData }: { userData: DiscordAnalysis | undefined }) {
   return (
     <div className="w-full max-w-6xl">
       {/* Display emojis representing the user */}

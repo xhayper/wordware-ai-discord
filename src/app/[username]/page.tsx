@@ -21,21 +21,6 @@ const Page = async ({ params }: { params: { username: string } }) => {
     return redirect(`/?u=${params.username}`)
   }
 
-  const extractDescription = ({ fullProfile }: { fullProfile: unknown }) => {
-    if (typeof fullProfile !== 'object' || fullProfile === null) return ''
-
-    const description = (fullProfile as any).description || ''
-    const entities = (fullProfile as any).entities?.description
-
-    if (!entities?.urls) return description
-
-    return entities.urls.reduce((newDescription: string, url: any) => {
-      return newDescription.replace(url.url, url.display_url)
-    }, description)
-  }
-
-  const processedDescription = extractDescription({ fullProfile: data.fullProfile })
-
   return (
     <div className="flex-center relative min-h-screen w-full flex-col gap-12 bg-[#F9FAFB] px-4 py-28 sm:px-12 md:px-28 md:pt-24">
       <div className="flex-center fixed top-0 z-50 w-full border-b bg-white/80 py-2 shadow-[5px_5px_30px_rgba(190,190,190,0.15),-5px_-5px_30px_rgba(255,255,255,0.15)] backdrop-blur-sm">
@@ -130,8 +115,6 @@ const Page = async ({ params }: { params: { username: string } }) => {
             <div className="text-xl font-bold">
               {data.name} <span className="text-base font-normal text-gray-500">@{data.username}</span>
             </div>
-            <div className="text-gray-500">{data.location}</div>
-            <div className="max-w-sm text-sm">{processedDescription}</div>
           </div>
         </div>
       </div>
